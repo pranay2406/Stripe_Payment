@@ -1,0 +1,114 @@
+<form id="paymentForm">
+  <label>Amount: <input type="number" name="amount" id="amount" required></label>
+  <label>Currency: <input type="text" name="currency" id="currency" required></label>
+  <label>Quantity: <input type="number" name="quantity" id="quantity" required></label>
+  <button type="submit">Pay</button>
+</form>
+<style>
+  /* General styling */
+  body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  /* Form Container */
+  #paymentForm {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 320px;
+  }
+
+  /* Input Fields */
+  label {
+    display: flex;
+    flex-direction: column;
+    font-weight: 600;
+    color: #333;
+  }
+
+  input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+  }
+
+  input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+  }
+
+  /* Button */
+  button {
+    padding: 12px;
+    background: #007bff;
+    color: #ffffff;
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+
+  button:hover {
+    background: #0056b3;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 400px) {
+    #paymentForm {
+      width: 90%;
+    }
+  }
+</style>
+<script>
+  document.getElementById("paymentForm").addEventListener("submit", async function(event) {
+    event.preventDefault(); // Prevent page reload
+
+    // Get form values
+    const amount = document.getElementById("amount").value;
+    const currency = document.getElementById("currency").value;
+    const quantity = document.getElementById("quantity").value;
+
+    // Create request body
+    const paymentData = {
+      amount: Number(amount),
+      currency: currency.trim(),
+      quantity: Number(quantity)
+    };
+
+    try {
+      const response = await fetch("http://localhost:8080/plantiak/payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(paymentData)
+      });
+
+      const data = await response.json();
+
+      if (data.status === "SUCCESS" && data.sessionUrl) {
+        window.location.href = data.sessionUrl; // Redirect to Stripe checkout page
+      } else {
+        alert("Payment failed: " + (data.message || "Unknown error"));
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred. Please try again.");
+    }
+  });
+</script>

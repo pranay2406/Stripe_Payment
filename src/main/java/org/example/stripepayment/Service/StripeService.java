@@ -2,7 +2,6 @@ package org.example.stripepayment.Service;
 
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
-import com.stripe.model.Review;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import jakarta.annotation.PostConstruct;
@@ -26,6 +25,7 @@ public class StripeService {
     public StripeResponse getStripe(ProductRequest productRequest) throws StripeException {
         Stripe.apiKey=secretKey;
 
+
         SessionCreateParams.LineItem.PriceData.ProductData productData =
                 SessionCreateParams.LineItem.PriceData.ProductData.builder()
                         .setName(productRequest.getName() == null ? "Product Payment" : productRequest.getName())
@@ -47,8 +47,8 @@ public class StripeService {
         SessionCreateParams params =
                 SessionCreateParams.builder()
                         .setMode(SessionCreateParams.Mode.PAYMENT)
-                        .setSuccessUrl("http://localhost:8080/api/payment/success")
-                        .setCancelUrl("http://localhost:8080/api/payment/cancel")
+                        .setSuccessUrl("http://localhost:8080/api/payment/success") // your success page
+                        .setCancelUrl("http://localhost:8080/api/payment/cancel") // your failure page
                         .addLineItem(lineItem)
                         .build();
 
